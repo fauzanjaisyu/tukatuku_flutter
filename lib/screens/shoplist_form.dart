@@ -1,168 +1,220 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:pbp_django_auth/pbp_django_auth.dart';
+import 'package:provider/provider.dart';
+import 'package:tukatuku/screens/menu.dart';
 import 'package:tukatuku/widgets/left_drawer.dart';
-import 'package:tukatuku/widgets/shop_card.dart';
 
 class ShopFormPage extends StatefulWidget {
-    const ShopFormPage({super.key});
+  const ShopFormPage({Key? key});
 
-    @override
-    State<ShopFormPage> createState() => _ShopFormPageState();
+  @override
+  State<ShopFormPage> createState() => _ShopFormPageState();
 }
 
-List<Stuff> stuffs =[];
-
 class _ShopFormPageState extends State<ShopFormPage> {
-    final _formKey = GlobalKey<FormState>();
-    String _name = "";
-    int _amount = 0;
-    String _description = "";
-    
-
-    @override
-    Widget build(BuildContext context) {
-      return Scaffold(
-        appBar: AppBar(
-          title: const Center(
-            child: Text(
-              'Form Tambah Produk',
-            ),
+  final _formKey = GlobalKey<FormState>();
+  String _name = "";
+  int _price = 0;
+  String _description = "";
+  String _category = "";
+  int _amount = 0;
+ 
+  @override
+  Widget build(BuildContext context) {
+    final request = context.watch<CookieRequest>();
+    return Scaffold(
+      appBar: AppBar(
+        title: const Center(
+          child: Text(
+            'Form Tambah Produk',
           ),
-          backgroundColor: Colors.indigo,
-          foregroundColor: Colors.white,
         ),
-        drawer: const LeftDrawer(),
-        body: Form(
-          key: _formKey,
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: TextFormField(
-                    decoration: InputDecoration(
-                      hintText: "Nama Produk",
-                      labelText: "Nama Produk",
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(5.0),
-                      ),
+        backgroundColor: Colors.indigo,
+        foregroundColor: Colors.white,
+      ),
+      drawer: const LeftDrawer(),
+      body: Form(
+        key: _formKey,
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: TextFormField(
+                  decoration: InputDecoration(
+                    hintText: "Nama Produk",
+                    labelText: "Nama Produk",
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(5.0),
                     ),
-                    onChanged: (String? value) {
-                      setState(() {
-                        _name = value!;
-                      });
-                    },
-                    validator: (String? value) {
-                      if (value == null || value.isEmpty) {
-                        return "Nama tidak boleh kosong!";
-                      }
-                      return null;
-                    },
                   ),
+                  onChanged: (String? value) {
+                    setState(() {
+                      _name = value!;
+                    });
+                  },
+                  validator: (String? value) {
+                    if (value == null || value.isEmpty) {
+                      return "Nama tidak boleh kosong!";
+                    }
+                    return null;
+                  },
                 ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: TextFormField(
-                    decoration: InputDecoration(
-                      hintText: "Stok",
-                      labelText: "Stok",
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(5.0),
-                      ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: TextFormField(
+                  decoration: InputDecoration(
+                    hintText: "Harga",
+                    labelText: "Harga",
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(5.0),
                     ),
-                    onChanged: (String? value) {
-                      setState(() {
-                        _amount = int.parse(value!);
-                      });
-                    },
-                    validator: (String? value) {
-                      if (value == null || value.isEmpty) {
-                        return "Stok tidak boleh kosong!";
-                      }
-                      if (int.tryParse(value) == null) {
-                        return "Stok harus berupa angka!";
-                      }
-                      return null;
-                    },
                   ),
+                  onChanged: (String? value) {
+                    setState(() {
+                      _price = int.parse(value!);
+                    });
+                  },
+                  validator: (String? value) {
+                    if (value == null || value.isEmpty) {
+                      return "Harga tidak boleh kosong!";
+                    }
+                    if (int.tryParse(value) == null) {
+                      return "Harga harus berupa angka!";
+                    }
+                    return null;
+                  },
                 ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: TextFormField(
-                    decoration: InputDecoration(
-                      hintText: "Deskripsi",
-                      labelText: "Deskripsi",
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(5.0),
-                      ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: TextFormField(
+                  decoration: InputDecoration(
+                    hintText: "Deskripsi",
+                    labelText: "Deskripsi",
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(5.0),
                     ),
-                    onChanged: (String? value) {
-                      setState(() {
-                        _description = value!;
-                      });
-                    },
-                    validator: (String? value) {
-                      if (value == null || value.isEmpty) {
-                        return "Deskripsi tidak boleh kosong!";
-                      }
-                      return null;
-                    },
                   ),
+                  onChanged: (String? value) {
+                    setState(() {
+                      _description = value!;
+                    });
+                  },
+                  validator: (String? value) {
+                    if (value == null || value.isEmpty) {
+                      return "Deskripsi tidak boleh kosong!";
+                    }
+                    return null;
+                  },
                 ),
-                Align(
-                  alignment: Alignment.bottomCenter,
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: ElevatedButton(
-                      style: ButtonStyle(
-                        backgroundColor:
-                            MaterialStateProperty.all(Colors.indigo),
-                      ),
-                      onPressed: () {
-                        if (_formKey.currentState!.validate()) {
-                          stuffs.add(Stuff(name: _name, amount: _amount, description: _description));
-                          showDialog(
-                            context: context,
-                            builder: (context) {
-                              return AlertDialog(
-                                title: const Text('Produk berhasil tersimpan'),
-                                content: SingleChildScrollView(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text('Nama: $_name'),
-                                      Text('Price: $_amount'),
-                                      Text('Description: $_description'),
-                                      
-                                    ],
-                                  ),
-                                ),
-                                actions: [
-                                  TextButton(
-                                    child: const Text('OK'),
-                                    onPressed: () {
-                                      Navigator.pop(context);
-                                    },
-                                  ),
-                                ],
-                              );
-                            },
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: TextFormField(
+                  decoration: InputDecoration(
+                    hintText: "Kategori",
+                    labelText: "Kategori",
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(5.0),
+                    ),
+                  ),
+                  onChanged: (String? value) {
+                    setState(() {
+                      _category = value!;
+                    });
+                  },
+                  validator: (String? value) {
+                    if (value == null || value.isEmpty) {
+                      return "Kategori tidak boleh kosong!";
+                    }
+                    return null;
+                  },
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: TextFormField(
+                  decoration: InputDecoration(
+                    hintText: "Amount",
+                    labelText: "Amount",
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(5.0),
+                    ),
+                  ),
+                  onChanged: (String? value) {
+                    setState(() {
+                      _amount = int.parse(value!);
+                    });
+                  },
+                  validator: (String? value) {
+                    if (value == null || value.isEmpty) {
+                      return "Amount tidak boleh kosong!";
+                    }
+                    if (int.tryParse(value) == null) {
+                      return "Amount harus berupa angka!";
+                    }
+                    return null;
+                  },
+                ),
+              ),
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: ElevatedButton(
+                    style: ButtonStyle(
+                      backgroundColor:
+                          MaterialStateProperty.all(Colors.indigo),
+                    ),
+                    onPressed: () async {
+                      if (_formKey.currentState!.validate()) {
+                        // Kirim ke Django dan tunggu respons
+                        final response = await request.postJson(
+                          // "http://localhost:8000/auth/logout/"
+                            "http://muhammad-fauzan25-tugas.pbp.cs.ui.ac.id/create-flutter/",
+                            jsonEncode(<String, String>{
+                              'name': _name,
+                              'price': _price.toString(),
+                              'description': _description,
+                              'category': _category,
+                              'amount': _amount.toString(),
+                            }));
+                        if (response['status'] == 'success') {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                  content: Text(
+                                      "Produk baru berhasil disimpan!"),
+                              ));
+                          Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => MyHomePage(),
+                              ),
                           );
-                          _formKey.currentState!.reset();
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                  content: Text(
+                                      "Terdapat kesalahan, silakan coba lagi."),
+                              ));
                         }
-                      },
-                      child: const Text(
-                        "Save",
-                        style: TextStyle(color: Colors.white),
-                      ),
+                      }
+                    },
+                    child: const Text(
+                      "Save",
+                      style: TextStyle(color: Colors.white),
                     ),
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
-      );
-    }
+      ),
+    );
+  }
 }

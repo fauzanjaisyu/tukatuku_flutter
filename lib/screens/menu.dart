@@ -29,7 +29,7 @@ class MyHomePage extends StatelessWidget {
           ),
         ],
       ),
-      drawer: LeftDrawer(),
+      drawer: const LeftDrawer(),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(10.0),

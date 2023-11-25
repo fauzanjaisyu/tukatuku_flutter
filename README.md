@@ -85,3 +85,109 @@ Pada tugas kali ini saya menggunakan elemen input `TextFormField`. `TextFormFiel
 5. Membuat `stuff_list.dart` yang bertujuan untuk menampilkan barang-barang yang ditambahkan oleh pengguna pada form yang tertera.
 
 6. Melakukan routing dengan `Navigator` pada tombol-tombol yang diperlukan seperti tombol pada card yang ada di `menu.dart` dan pada drawer kepada screens yang bersesuaian.
+
+# **Tugas 9**
+## Apakah bisa kita melakukan pengambilan data JSON tanpa membuat model terlebih dahulu? Jika iya, apakah hal tersebut lebih baik daripada membuat model sebelum melakukan pengambilan data JSON?
+Ya, hal ini memungkinkan. JSON (JavaScript Object Notation) adalah format yang umum digunakan untuk pertukaran data di berbagai platform. Kita dapat mengambil data JSON dan menggunakan teknik pemrosesan data dinamis untuk mengekstrak informasi yang diperlukan tanpa harus membuat model terlebih dahulu. Namun hal ini belum tentu lebih baik tergantung kebutuhan dan tujuan. Jika ingin mengambil data sederhana maka tidak membuat model terlebih dahulu tidak apa. Namun jika data JSON memerlukan kompleksitas yang lebih tinggi, maka model dapat membantu dengan pemrosesan data yang lebih rumit dan efisien.
+
+## Fungsi dari CookieRequest dan mengapa instance CookieRequest perlu untuk dibagikan ke semua komponen di aplikasi Flutter
+`CookieRequest` dalam konteks pembuatan aplikasi Flutter adalah sebuah objek atau kelas yang bertanggung jawab untuk menangani request HTTP yang membutuhkan penggunaan cookie. Cookie biasanya digunakan untuk menyimpan informasi otentikasi atau sesi di sisi server. Oleh karena itu, `CookieRequest` perlu dibagikan kepada seluruh komponen di aplikasi Flutter agar aplikasi dapat memiliki akses kepada data pengguna yang sama.
+
+## Mekanisme pengambilan data dari JSON hingga dapat ditampilkan pada Flutter
+1. Melakukan request HTTP menggunakan `http.get()` dengan URL yang dituju
+2. Mendapatkan respons dalam bentuk JSON
+3. JSON kemudian di decode menggunakan `jsonDecode()`
+4. Mengonversi data yang sudah di decode menjadi objek yang sesuai dengan model
+5. Menampilkan data yang ada menggunakan `ListView`
+
+##  Mekanisme autentikasi dari input data akun pada Flutter ke Django hingga selesainya proses autentikasi oleh Django dan tampilnya menu pada Flutter
+1. User diarahkan ke halaman `login` untuk input data user
+2. Ketika tombol `login` ditekan, maka akan mengirim HTTP request kepada URL proyek Django
+3. Kemudian dilakukan autentikasi pada `views.py` yang ada pada `authentication` proyek Django
+4. Ketika autentikasi berhasil, maka user akan diarahkan ke halaman `MyHomePage`
+
+## Widget yang digunakan 
+`Scaffold`: Digunakan sebagai kerangka atau struktur dasar halaman yang memiliki app bar, drawer, dan body.
+
+`AppBar`: Menampilkan judul halaman dengan gaya teks tertentu dan warna latar belakang.
+
+`Drawer`: Digunakan untuk menampilkan drawer atau bilah samping kiri dengan menggunakan widget LeftDrawer.
+
+`FutureBuilder`: Membantu dalam menangani proses asinkron, khususnya ketika menunggu hasil dari future (seperti hasil dari fetchProduct()). Widget ini memungkinkan Anda untuk membangun UI berdasarkan status Future seperti ConnectionState.waiting, ConnectionState.done, dan lainnya.
+
+`ListView.builder`: Digunakan untuk menampilkan daftar item dalam bentuk scrollable list. Ini membangun item secara dinamis sesuai dengan jumlah data yang diterima dari future.
+
+`InkWell`: Memberikan efek tap atau klik saat item list ditekan. Digunakan di dalam ListView.builder untuk mendeteksi interaksi pengguna dan navigasi ke halaman detail item.
+
+`Card`: Mengelompokkan konten menjadi kartu dengan bayangan dan sudut yang dibulatkan untuk setiap item dalam ListView.
+
+`Text`: Menampilkan teks pada layar dengan gaya tertentu. Digunakan untuk menampilkan nama, kategori, dan jumlah item.
+
+`Center`: Mengatur widget ke tengah area render. Digunakan untuk menampilkan CircularProgressIndicator saat data masih diambil (loading).
+
+`Column`: Menyusun widget secara vertikal satu per satu. Digunakan untuk menyusun teks deskripsi item (nama, kategori, jumlah) dalam Card.
+
+`Padding`: Menambahkan ruang kosong di sekeliling konten dari Column dalam Card.
+
+## **Cara pengimplementasian Tugas 9**
+
+### **Membuat halaman login dan melakukan integrasi dengan proyek Django**
+1. Membuat App baru (authentication) pada proyek Django dan menginstall library corsheaders
+2. Membuat fungsi login pada `views.py`
+3. Menginstall package `pbp_django_auth` serta memodifikasi root widget untuk menyediakan CookieRequest library ke semua child widgets dengan menggunakan Provider
+4. Membuat `login.dart` untuk menampilkan halaman login
+
+### **Membuat model kustom yang menyesuaikan proyek Django**
+1. Membuka endpoint JSON dan menyalinnya pada situs `Quicktype` untuk mengonversikan model ke dalam dart
+2. Salin model dalam bentuk dart
+3. Membuat `product.dart` sebagai model
+
+### **Membuat halaman yang menampilkan item
+Melakukan penambahan kode pada `stuff_list.dart` yang sudah dibuat pada bonus tugas 8 agar dapat melakukan pengambilan data JSON serta menambahkan kode agar apabila card item diklik maka akan melakukan routing ke `detail_item.dart`
+
+### **Membuat halaman detail untuk setiap item yang terdapat pada halaman daftar Item**
+Membuat `detail_item.dart` dengan kode berikut
+```dart
+import 'package:flutter/material.dart';
+import 'package:tukatuku/models/product.dart';
+
+class DetailItemPage extends StatelessWidget {
+final Product item;
+
+DetailItemPage({required this.item});
+
+@override
+Widget build(BuildContext context) {
+    return Scaffold(
+    appBar: AppBar(
+        title: Text(
+        '${item.fields.name}',
+        style: TextStyle(color: Colors.white),
+        ),
+        backgroundColor: Colors.indigo[900],
+        foregroundColor: Colors.white,
+    ),
+    body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+            Text(
+            item.fields.name,
+            style: Theme.of(context).textTheme.titleLarge,
+            ),
+            const SizedBox(height: 10),
+            Text("Amount : ${item.fields.amount}"),
+            const SizedBox(height: 10),
+            Text("Description : ${item.fields.description}"),
+            const SizedBox(height: 10),
+            Text("Price : ${item.fields.price}"),
+             const SizedBox(height: 10),
+            Text("Category: ${item.fields.category}"),
+        ],
+        ),
+    ),
+    );
+}
+}
+```

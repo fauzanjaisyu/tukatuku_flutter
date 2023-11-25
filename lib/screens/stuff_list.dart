@@ -1,50 +1,113 @@
 import 'package:flutter/material.dart';
-import 'package:tukatuku/screens/shoplist_form.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:tukatuku/models/product.dart';
+import 'package:tukatuku/screens/detail_item.dart';
 import 'package:tukatuku/widgets/left_drawer.dart';
 
-class StuffPage extends StatefulWidget {
-  const StuffPage({super.key});
+class ProductPage extends StatefulWidget {
+    const ProductPage({Key? key}) : super(key: key);
 
-  @override
-  State<StatefulWidget> createState() => _StuffPageState();
+    @override
+    _ProductPageState createState() => _ProductPageState();
 }
 
-class _StuffPageState extends State<StuffPage> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Stuffs'),
-        backgroundColor: Colors.indigo,
-        foregroundColor: Colors.white,
-      ),
-      drawer: const LeftDrawer(),
-      body: ListView.builder(
-        itemCount: stuffs.length,
-        itemBuilder: (context, index) {
-          final stuff = stuffs[index];
-          return Card(
-            margin: const EdgeInsets.all(10),
-            elevation: 5,
-            child: ListTile(
-              title: Text(
-                stuff.name,
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black
-                ),
-              ),
-              subtitle: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text("Ammount: ${stuff.amount}"),
-                  Text("Descrption: ${stuff.description}")
-                ],
-              ),
-            )
-          );
-        },
-      )
+class _ProductPageState extends State<ProductPage> {
+Future<List<Product>> fetchProduct() async {
+    var url = Uri.parse(
+     // "http://localhost:8000/auth/logout/"
+        'http://muhammad-fauzan25-tugas.pbp.cs.ui.ac.id/json/');
+    var response = await http.get(
+        url,
+        headers: {"Content-Type": "application/json"},
     );
-  }
+
+    // melakukan decode response menjadi bentuk json
+    var data = jsonDecode(utf8.decode(response.bodyBytes));
+
+    // melakukan konversi data json menjadi object Product
+    List<Product> list_product = [];
+    for (var d in data) {
+        if (d != null) {
+            list_product.add(Product.fromJson(d));
+        }
+    }
+    return list_product;
+}
+
+@override
+    Widget build(BuildContext context) {
+        return Scaffold(
+        appBar: AppBar(
+            title: const Text(
+            'Items',
+            style: TextStyle(color: Colors.white),
+            ),
+            backgroundColor: Colors.indigo[900],
+            foregroundColor: Colors.white,
+        ),
+        drawer: const LeftDrawer(),
+        body: FutureBuilder(
+            future: fetchProduct(),
+            builder: (context, AsyncSnapshot snapshot) {
+                if (snapshot.data == null) {
+                return const Center(child: CircularProgressIndicator());
+                } else {
+                if (!snapshot.hasData) {
+                    return const Column(
+                    children: [
+                        Text(
+                        "No items.",
+                        style: TextStyle(color: Color(0xff59A5D8), fontSize: 20),
+                        ),
+                        SizedBox(height: 8),
+                    ],
+                    );
+                } else {
+                    return ListView.builder(
+                    itemCount: snapshot.data!.length,
+                    itemBuilder: (_, index) => InkWell(
+                        onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                            builder: (context) =>
+                                DetailItemPage(item: snapshot.data![index]),
+                            ),
+                        );
+                        },
+                        child: Card(
+                        margin: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 12),
+                        child: Padding(
+                            padding: const EdgeInsets.all(20.0),
+                            child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                                Text(
+                                "${snapshot.data![index].fields.name}",
+                                style: const TextStyle(
+                                    fontSize: 18.0,
+                                    fontWeight: FontWeight.bold,
+                                ),
+                                ),
+                                const SizedBox(height: 10),
+                                Text(
+                                    "Category : ${snapshot.data![index].fields.category}"),
+                                const SizedBox(height: 10),
+                                Text(
+                                    "Amount : ${snapshot.data![index].fields.amount}")
+                            ],
+                            ),
+                        ),
+                        ),
+                    ),
+                    );
+                }
+                }
+            }),
+        );
+    }
+
 }
