@@ -2,7 +2,8 @@
 
 **Daftar isi :**<br/>
 [Tugas 7](#tugas-7)<br/>
-[Tugas 8](#tugas-8)
+[Tugas 8](#tugas-8)<br/>
+[Tugas 9](#tugas-9)
 
 **Muhammad Fauzan Jaisyurrahman**<br/>
 **2206814040**<br/>
@@ -142,7 +143,7 @@ Ya, hal ini memungkinkan. JSON (JavaScript Object Notation) adalah format yang u
 2. Salin model dalam bentuk dart
 3. Membuat `product.dart` sebagai model
 
-### **Membuat halaman yang menampilkan item
+### **Membuat halaman yang menampilkan item**
 Melakukan penambahan kode pada `stuff_list.dart` yang sudah dibuat pada bonus tugas 8 agar dapat melakukan pengambilan data JSON serta menambahkan kode agar apabila card item diklik maka akan melakukan routing ke `detail_item.dart`
 
 ### **Membuat halaman detail untuk setiap item yang terdapat pada halaman daftar Item**
